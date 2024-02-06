@@ -3,9 +3,8 @@ from tkinter import ttk, simpledialog
 from PIL import Image, ImageTk
 from tkinter.messagebox import showerror, showwarning, showinfo
 from tkinter import filedialog
-import numpy as np
 import cv2
-import cups
+
 import print_util
 
 aspect_ratio = 4.5 / 3.5
@@ -25,33 +24,15 @@ def finish():
 
 
 def print_snapshot():
+    global image_path
     if image_path is not None:
-        print_image_with_cm_dimensions(3.7, 4.7)
+        print_util.print_image_with_cm_dimensions(image_path,3.7, 4.7)
     else:
         showwarning(title="Предупреждение", message="Необходимо сохранить фото")
     print("Печать")
 
 
-def print_image_with_cm_dimensions(width_cm, height_cm):
-    global image_path
-    try:
-        conn = cups.Connection()
-        printers = conn.getPrinters()
-        printer_name = list(printers.keys())[0]  # Replace with the actual printer name
 
-        image = Image.open(image_path)
-        dpi = 300  # Adjust the DPI based on the printer's capabilities
-        width_px = int(width_cm / 2.54 * dpi)
-        height_px = int(height_cm / 2.54 * dpi)
-        resized_image = image.resize((width_px, height_px))
-        resized_image.save("/tmp/resized_image.png")  # Save the resized image temporarily
-
-        print_util.add_image("/tmp/resized_image.png", "/tmp/image.pdf")
-
-        conn.printFile(printer_name, "/tmp/image.pdf", "Image", {})  # Print the resized image
-    except Exception as e:
-        showerror(title="Ошибка", message=f"Не удалось напечатать изображение: {e}")
-        print(f"An error occurred: {e}")
 
 
 # Example usage
@@ -166,7 +147,7 @@ printBtn.grid(row=1, column=3)
 
 lmain = ttk.Label(imageFrame)
 lmain.grid(row=0, column=0)
-cap = cv2.VideoCapture(2)
+cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 1)  # Включение автофокуса
