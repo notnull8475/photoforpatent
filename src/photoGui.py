@@ -1,16 +1,14 @@
-import tkinter
-import tkinter.filedialog
 from tkinter import *
 from tkinter import ttk, simpledialog
 from PIL import Image, ImageTk
+from tkinter.messagebox import showerror, showwarning, showinfo
+from tkinter import filedialog
 import numpy as np
 import cv2
 import cups
 import print_util
 
-image_size_h = 4.5
-image_size_w = 3.5
-aspect_ratio = image_size_h / image_size_w
+aspect_ratio = 4.5 / 3.5
 rectangle_color = (255, 255, 255)
 image_size_ratio = 1.5
 prev_face = None
@@ -30,7 +28,7 @@ def print_snapshot():
     if image_path is not None:
         print_image_with_cm_dimensions(3.7, 4.7)
     else:
-        print("Нет изображения для печати")
+        showwarning(title="Предупреждение", message="Необходимо сохранить фото")
     print("Печать")
 
 
@@ -48,44 +46,36 @@ def print_image_with_cm_dimensions(width_cm, height_cm):
         resized_image = image.resize((width_px, height_px))
         resized_image.save("/tmp/resized_image.png")  # Save the resized image temporarily
 
-        # preview_window = tkinter.Toplevel()
-        # preview_window.title("Предпросмотр")
-        #
-        preview_image = Image.open("/tmp/resized_image.png")
-        print_util.add_image("/tmp/resized_image.png","/tmp/image.pdf")
-        # preview_image.thumbnail((640, 480))
-        # photo = ImageTk.PhotoImage(preview_image)
-        #
-        # label = tkinter.Label(preview_window, image=photo)
-        # label.image = photo
-        # label.pack()
+        print_util.add_image("/tmp/resized_image.png", "/tmp/image.pdf")
 
         conn.printFile(printer_name, "/tmp/image.pdf", "Image", {})  # Print the resized image
     except Exception as e:
+        showerror(title="Ошибка", message=f"Не удалось напечатать изображение: {e}")
         print(f"An error occurred: {e}")
 
 
 # Example usage
 
 
-def save_snapshot(img):
-    global image_sizes, image_path
-    if img is not None:
-        # name = simpledialog.askstring("Input", "Enter file name")
+def save_snapshot():
+    global image_sizes, image_path, image
+    if image is not None:
         if image_sizes is not None:
-            img = img.crop((image_sizes['x'], image_sizes['y'], image_sizes['x'] + image_sizes['w'],
-                            image_sizes['y'] + image_sizes['h']))
+            image = image.crop((image_sizes['x'], image_sizes['y'], image_sizes['x'] + image_sizes['w'],
+                                image_sizes['y'] + image_sizes['h']))
             image_sizes = None
-        rgb_im = img.convert('RGB')
-        file = tkinter.filedialog.asksaveasfilename(title="Сохранить", defaultextension=".jpg",
-                                                    filetypes=[("JPEG", "*.jpg"), ("PNG", "*.png"),
-                                                               ("All Files", "*.*")])
+        rgb_im = image.convert('RGB')
+        file = filedialog.asksaveasfilename(title="Сохранить", defaultextension=".jpg",
+                                            filetypes=[("JPEG", "*.jpg"), ("PNG", "*.png"),
+                                                       ("All Files", "*.*")])
         if file:
             image_path = file
             rgb_im.save(file)
         else:
-            print("Ошибка сохранения, неверное имя файла")
+            take_snapshot()
+            save_snapshot()
     else:
+        showerror(title="Ошибка", message="Не удалось сохранить изображение")
         print("Не удалось сохранить изображение")
 
 
@@ -168,11 +158,11 @@ closeBtn.grid(row=1, column=0)
 photoBtn = ttk.Button(text="Фото", command=lambda: take_snapshot())
 photoBtn.grid(row=1, column=1)
 
-printBtn = ttk.Button(text="Печать", command=lambda: print_snapshot())
-printBtn.grid(row=1, column=2)
+saveBtn = ttk.Button(text="Сохранить", command=lambda: save_snapshot())
+saveBtn.grid(row=1, column=2)
 
-saveBtn = ttk.Button(text="Сохранить", command=lambda: save_snapshot(image))
-saveBtn.grid(row=1, column=3)
+printBtn = ttk.Button(text="Печать", command=lambda: print_snapshot())
+printBtn.grid(row=1, column=3)
 
 lmain = ttk.Label(imageFrame)
 lmain.grid(row=0, column=0)
@@ -181,8 +171,6 @@ cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 1)  # Включение автофокуса
 
-# sliderFrame = ttk.Frame(root, width=800, )
-# sliderFrame.grid(row=600, column=0, padx=10, pady=2, columnspan=4)
 show_frame()
 
 root.mainloop()
