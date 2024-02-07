@@ -1,0 +1,13 @@
+asgiref==3.7.2
+cmake==3.28.1
+cv==1.0.0
+Django==5.0.1
+fpdf==1.7.2
+image==1.5.33
+numpy==1.26.3
+opencv-python==4.9.0.80
+pillow==10.2.0
+pycups==2.0.1
+six==1.16.0
+sqlparse==0.4.4
+tk==0.1.0
