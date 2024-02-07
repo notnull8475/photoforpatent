@@ -16,6 +16,7 @@ image = None
 image_sizes = None
 photo_flag = True
 image_path = None
+video_port = 0
 
 
 def finish():
@@ -103,24 +104,27 @@ def show_frame():
 
 def facedetect(img):
     global prev_face, image_sizes
-    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_alt.xml')
+    # face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+    nested_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_eye.xml")
     faces = face_cascade.detectMultiScale(img, 1.1, 4)
     new_x, new_y, new_w, new_h = 0, 0, 0, 0
-    for (x, y, w, h) in faces:
-        # if prev_face is not None:
-        #     prev_face = apply_rolling_average_filter(prev_face, {'x': x, 'y': y, 'w': w, 'h': h}, alpha)
-        # else:
-        prev_face = initialize_rolling_average_filter(x, y, w, h)
-        x_center = prev_face['x'] + (prev_face['w'] / 2)
-        y_center = prev_face['y'] + (prev_face['h'] / 2)
+    if not nested_cascade.empty():
+        for (x, y, w, h) in faces:
+            # if prev_face is not None:
+            #     prev_face = apply_rolling_average_filter(prev_face, {'x': x, 'y': y, 'w': w, 'h': h}, alpha)
+            # else:
+            prev_face = initialize_rolling_average_filter(x, y, w, h)
+            x_center = prev_face['x'] + (prev_face['w'] / 2)
+            y_center = prev_face['y'] + (prev_face['h'] / 2)
 
-        new_w = int(prev_face['w'] * image_size_ratio)
-        new_h = int(new_w * aspect_ratio)
+            new_w = int(prev_face['w'] * image_size_ratio)
+            new_h = int(new_w * aspect_ratio)
 
-        new_x = int(x_center - (new_w / 2))
-        new_y = int(y_center - new_h / 2)
+            new_x = int(x_center - (new_w / 2))
+            new_y = int(y_center - new_h / 2)
 
-        cv2.rectangle(img, (new_x, new_y), (new_x + new_w, new_y + new_h), rectangle_color, 2)
+            cv2.rectangle(img, (new_x, new_y), (new_x + new_w, new_y + new_h), rectangle_color, 2)
 
     image_sizes = {'x': new_x, 'y': new_y, 'w': new_w, 'h': new_h}
 
@@ -147,7 +151,7 @@ printBtn.grid(row=1, column=3)
 
 lmain = ttk.Label(imageFrame)
 lmain.grid(row=0, column=0)
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(video_port)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 1)  # Включение автофокуса
