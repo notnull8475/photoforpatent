@@ -23,6 +23,8 @@ class Interface:
 
         printBtn = ttk.Button(text="Печать", command=lambda: self.print_snapshot)
         printBtn.grid(row=1, column=3)
+        self.images = Images()
+        print("Инициализация видео в интерфйсе")
 
         # if self.show_flag:
         self.show_frame()
@@ -44,11 +46,10 @@ class Interface:
     def show_frame(self):
         l_main = ttk.Label(self.imageFrame)
         l_main.grid(row=0, column=0)
-        images = Images
         # while self.show_flag:
         # print("показываю фрейм")
-        imgtk = images.get_image()
+        imgtk = self.images.get_image()
         l_main.imgtk = imgtk
         l_main.configure(image=imgtk)
         if self.show_flag:
-            l_main.after(Const.video_fps, self.show_frame())
+            l_main.after(Const.video_fps, self.show_frame)

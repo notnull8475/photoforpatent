@@ -5,6 +5,7 @@ from PIL import Image, ImageTk
 class Images:
 
     def __init__(self):
+        print("Инициализация видео")
         self.cap = cv2.VideoCapture(Const.video_port)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
