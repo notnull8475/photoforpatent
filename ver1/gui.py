@@ -1,7 +1,8 @@
+import tkinter
 from tkinter import *
-from tkinter import ttk, simpledialog
+from tkinter import ttk
 from PIL import Image, ImageTk
-from tkinter.messagebox import showerror, showwarning, showinfo
+from tkinter.messagebox import showerror, showwarning
 from tkinter import filedialog
 import cv2
 
@@ -27,7 +28,7 @@ def finish():
 def print_snapshot():
     global image_path
     if image_path is not None:
-        print_util.print_image_with_cm_dimensions(image_path,3.7, 4.7)
+        print_util.print_image_with_cm_dimensions(image_path, 3.7, 4.7)
     else:
         showwarning(title="Предупреждение", message="Необходимо сохранить фото")
     print("Печать")
@@ -128,6 +129,13 @@ def facedetect(img):
 
     image_sizes = {'x': new_x, 'y': new_y, 'w': new_w, 'h': new_h}
 
+
+def select_printer(printers):
+    printSelect = tkinter.Toplevel()
+    printSelect.title("Выбор принтера")
+    combobox = ttk.Combobox(values=printers)
+    combobox.grid(row=0, column=0)
+    printSelect.mainloop()
 
 root = Tk()  # создаем корневой объект - окно
 root.title("PhotoBooth")  # устанавливаем заголовок окна
