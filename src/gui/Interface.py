@@ -10,32 +10,37 @@ class Interface:
         self.show_flag = True
         self.master = master
         self.imageFrame = ttk.Frame(master)  # создаем фрейм
-        self.imageFrame.grid(row=0, column=0, columnspan=4)
+        self.imageFrame.grid(row=0, column=0, columnspan=5)
 
+        settingsBtn = ttk.Button(text="Настройки")
+        settingsBtn.grid(row=1, column=0)
         closeBtn = ttk.Button(text="Закрыть", command=self.finish)  # создаем кнопку
-        closeBtn.grid(row=1, column=0)
+        closeBtn.grid(row=1, column=1)
 
-        photoBtn = ttk.Button(text="Фото", command=lambda: self.take_snapshot)
-        photoBtn.grid(row=1, column=1)
+        photoBtn = ttk.Button(text="Фото", command=lambda: self.take_snapshot())
+        photoBtn.grid(row=1, column=2)
 
         saveBtn = ttk.Button(text="Сохранить", command=lambda: self.save_snapshot)
-        saveBtn.grid(row=1, column=2)
+        saveBtn.grid(row=1, column=3)
 
         printBtn = ttk.Button(text="Печать", command=lambda: self.print_snapshot)
-        printBtn.grid(row=1, column=3)
+        printBtn.grid(row=1, column=4)
         self.images = Images()
         print("Инициализация видео в интерфйсе")
 
         # if self.show_flag:
         self.show_frame()
 
-
     def finish(self):
         self.master.destroy()  # ручное закрытие окна и всего приложения
         print("Закрытие приложения")
 
     def take_snapshot(self):
-        pass
+        if self.show_flag:
+            self.show_flag = False
+        else:
+            self.show_flag = True
+            self.show_frame()
 
     def save_snapshot(self):
         pass
