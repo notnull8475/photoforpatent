@@ -22,4 +22,11 @@ class Images:
         cv2image, face_size = self.facedetect.facedetect(cv2image)
         image = Image.fromarray(cv2image)
         imgtk = ImageTk.PhotoImage(image=image)
-        return imgtk
+        return cv2image, image, imgtk, face_size
+
+    def crop_image(self, face_size, img):
+        if face_size is not None:
+            return img.crop(
+                (face_size['x'], face_size['y'], face_size['x'] + face_size['w'], face_size['y'] + face_size['h']))
+        else:
+            return img
